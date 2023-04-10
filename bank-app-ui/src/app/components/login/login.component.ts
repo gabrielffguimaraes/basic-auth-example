@@ -13,28 +13,22 @@ import {CookieService} from "ngx-cookie-service";
 })
 export class LoginComponent implements OnInit {
   model = new User();
-  isLogged: boolean = false;
   constructor(private loginService: LoginService,
               private router: Router,
               private activatedRouter:ActivatedRoute,
               private csrfService:CsrfService,
               private cookieService: CookieService
   ) {
-    this.isLogged = this.loginService.isLogged();
+    
   }
   ngOnInit(): void {}
   onSubmit() {
-    if (this.isLogged) {
-      this.handleLogout();
-    } else {
-      this.handleLogin();
-    }
+    this.handleLogin();
   }
   handleLogout() {
     this.loginService.logout();
   }
   handleLogin() {
-    this.saveUserDetails();
     this.loginService.validateLoginDetails(this.model).subscribe(
       (responseData) => {
         this.handleLoginSuccess(responseData);
@@ -44,15 +38,27 @@ export class LoginComponent implements OnInit {
       }
     );
   }
-  saveUserDetails() {
-    window.localStorage.setItem("userdetails", JSON.stringify(this.model));
+  saveUserDetails(responseData : any) {
+    let user = new User();
+    user.email = responseData.body.email;
+    user.mobileNumber = responseData.body.mobileNumber;
+    user.name = responseData.body.name;
+    user.id = responseData.body.id;
+    user.authStatus = 'AUTH';
+    window.localStorage.setItem("userdetails", JSON.stringify(user));
   }
   handleLoginSuccess(responseData : any) {
-    this.model = <any>responseData.body;
+    this.csrfService.getCsrf().subscribe(csrf => localStorage.setItem('X-XSRF-TOKEN',csrf));
+    this.saveUserDetails(responseData);
+    this.navigateToDashboard();
+
+    /*
+    this.model = <any>responseData;
     this.model.authStatus = "AUTH";
     window.localStorage.setItem("authorization","Bearer "+responseData.headers.get('Authorization')!);
     window.localStorage.setItem("userdetails", JSON.stringify(this.model));
-    this.navigateToDashboard();
+    this.navigateToDashboard();*/
+
     /*
     this.csrfService.getCsrf().subscribe(
       (csrf) => {

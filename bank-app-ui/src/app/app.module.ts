@@ -14,13 +14,13 @@ import { AccountComponent } from './components/account/account.component';
 import { BalanceComponent } from './components/balance/balance.component';
 import { LoansComponent } from './components/loans/loans.component';
 import { CardsComponent } from './components/cards/cards.component';
-import { XhrInterceptor } from './interceptors/app.request.interceptor';
+
 import { AuthActivateRouteGuard } from './routeguards/auth.routeguard';
 import { HomeComponent } from './components/home/home.component';
+import { InterceptorInterceptor } from './interceptor.interceptor';
 
 @NgModule({
   declarations: [
-
     AppComponent,
     HeaderComponent,
     ContactComponent,
@@ -38,19 +38,15 @@ import { HomeComponent } from './components/home/home.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule,
-    HttpClientXsrfModule.withOptions({
-      cookieName: 'XSRF-TOKEN',
-      headerName: 'X-XSRF-TOKEN',
-    }),
+    HttpClientModule
   ],
   providers: [
+    AuthActivateRouteGuard,
     {
-      provide : HTTP_INTERCEPTORS,
-      useClass : XhrInterceptor,
-      multi : true
-    },
-    AuthActivateRouteGuard
+      provide: HTTP_INTERCEPTORS,
+      useClass: InterceptorInterceptor,
+      multi:true
+    }
   ],
   bootstrap: [AppComponent]
 })

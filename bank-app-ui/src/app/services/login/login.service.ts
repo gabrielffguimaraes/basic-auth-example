@@ -13,16 +13,29 @@ import jwt_decode  from 'jwt-decode';
 export class LoginService {
   constructor(private http: HttpClient,private router: Router) {}
   validateLoginDetails(user: User) {
-    return this.http.get(environment.rooturl + AppConstants.LOGIN_API_URL+"?email="+user.email, { observe: 'response',withCredentials: true });
+    let headers = new HttpHeaders();
+    headers = headers.append('Authorization','Basic ' + btoa(`${user.email}:${user.password}`));
+    return this.http.post(environment.rooturl + AppConstants.LOGIN_API_LOGIN+"?email="+user.email,{}, { 
+      headers,
+      withCredentials: true,
+      observe: 'response',
+      responseType: 'json' 
+    });
   }
-  logout() {
-    window.localStorage.clear();
-    this.router.navigate(['login'])
+  logout() : void {
+    this.http.get(environment.rooturl + AppConstants.LOGIN_API_LOGOUT).subscribe(() => {
+      window.localStorage.clear();
+      this.router.navigate(['login']);
+    });
   }
   getTokenDetails() {
     let token = jwt_decode<any>(localStorage.getItem('authorization')!);
     return token;
   }
+  check() {
+    return this.http.get(environment.rooturl, {withCredentials: true});
+  }
+  /*
   isLogged() : any {
     const token = localStorage.getItem('authorization');
     if(!token) {
@@ -33,6 +46,21 @@ export class LoginService {
       const expirationDate = new Date(0);
       expirationDate.setUTCSeconds(decodedToken.exp);
       return expirationDate.valueOf() > new Date().valueOf();
+    } catch (err) {
+      return false;
+    }
+  }*/
+  isLogged() : any {
+    let userDetails = localStorage.getItem('userdetails');
+    try {
+      if(!userDetails) {
+        return false
+      } 
+      let user : User = JSON.parse(userDetails);
+
+      if(user) {
+        return user.id != null && Number(user.id) > 0;
+      } 
     } catch (err) {
       return false;
     }

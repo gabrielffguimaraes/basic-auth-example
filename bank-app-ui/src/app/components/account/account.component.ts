@@ -17,18 +17,21 @@ export class AccountComponent implements OnInit {
               private http:HttpClient) {}
 
   ngOnInit(): void {
-    this.user = JSON.parse(localStorage.getItem('userdetails')!);
-    if(this.user){
-      this.dashboardService.getAccountDetails(this.user.id).subscribe(
-        responseData => {
-          if(responseData)
-              this.account = <any> responseData.body;
-        });
+    if(localStorage.getItem('userdetails') != null) {
+      this.user = JSON.parse(localStorage.getItem('userdetails')!);
+      if(this.user){
+        this.dashboardService.getAccountDetails(this.user.id).subscribe(
+          responseData => {
+            if(responseData)
+                this.account = <any> responseData;
+          });
+      }
     }
   }
   save() {
     this.account.customerId = this.user.id;
-    this.http.post('http://localhost:8080/myAccount',this.account,{withCredentials: true}).subscribe(() => {
+    console.log(this.account);
+    this.http.post('http://localhost:8080/accounts',this.account,{withCredentials: true}).subscribe(() => {
        alert("Dados alterados com sucesso !");
     });
   }

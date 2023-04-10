@@ -18,15 +18,18 @@ export class LoansComponent implements OnInit {
   constructor(private dashboardService: DashboardService, private loginService:LoginService) { }
 
   ngOnInit(): void {
-    this.user = JSON.parse(localStorage.getItem('userdetails') || "");
-    if(this.user){
-      this.dashboardService.getLoansDetails(this.user.id).subscribe(
-        responseData => {
-        this.loans = <any> responseData.body;
-        this.loans.forEach(function (this: LoansComponent, loan: Loans) {
-          this.currOutstandingBalance = this.currOutstandingBalance+loan.outstandingAmount;
-        }.bind(this));
-        });
+    if(localStorage.getItem('userdetails') != null) {
+      this.user = JSON.parse(localStorage.getItem('userdetails') || "");
+      if(this.user){
+        console.log(this.user);
+        this.dashboardService.getLoansDetails(this.user.id).subscribe(
+          responseData => {
+          this.loans = <any> responseData;
+          this.loans.forEach(function (this: LoansComponent, loan: Loans) {
+            this.currOutstandingBalance = this.currOutstandingBalance+loan.outstandingAmount;
+          }.bind(this));
+          });
+      }
     }
   }
   deleteLoan() {

@@ -14,8 +14,8 @@ import {catchError} from "rxjs/operators";
 export class IsAuthenticatedResolver implements Resolve<boolean> {
   constructor(private loginService: LoginService) {
   }
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.loginService.isLogged().pipe(catchError(() => {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
+    return this.loginService.check().pipe(catchError(() => {
         return of(false);
       }),
         defaultIfEmpty(false)

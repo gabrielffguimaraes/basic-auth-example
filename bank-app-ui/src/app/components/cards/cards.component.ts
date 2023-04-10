@@ -18,15 +18,17 @@ export class CardsComponent implements OnInit {
   constructor(private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    this.user = JSON.parse(localStorage.getItem('userdetails') || "");
-    if(this.user){
-      this.dashboardService.getCardsDetails(this.user.id).subscribe(
-        responseData => {
-        this.cards = <any> responseData.body;
-        this.cards.forEach(function (this: CardsComponent, card: Cards) {
-          this.currOutstandingAmt = this.currOutstandingAmt+card.availableAmount;
-        }.bind(this));
-        });
+    if(localStorage.getItem('userdetails') != null) {
+      this.user = JSON.parse(localStorage.getItem('userdetails') || "");
+      if(this.user){
+        this.dashboardService.getCardsDetails(this.user.id).subscribe(
+          responseData => {
+          this.cards = <any> responseData;
+          this.cards.forEach(function (this: CardsComponent, card: Cards) {
+            this.currOutstandingAmt = this.currOutstandingAmt+card.availableAmount;
+          }.bind(this));
+          });
+      }
     }
   }
 

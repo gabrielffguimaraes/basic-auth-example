@@ -16,12 +16,14 @@ export class BalanceComponent implements OnInit {
   constructor(private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    this.user = JSON.parse(localStorage.getItem('userdetails') || "");
-    if(this.user){
-      this.dashboardService.getAccountTransactions(this.user.id).subscribe(
-        responseData => {
-        this.transactions = <any> responseData.body;
-        });
+    if(localStorage.getItem('userdetails') != null) {
+      this.user = JSON.parse(localStorage.getItem('userdetails') || "");
+      if(this.user){
+        this.dashboardService.getAccountTransactions(this.user.id).subscribe(
+          responseData => {
+          this.transactions = <any> responseData;
+          });
+      }
     }
   }
 

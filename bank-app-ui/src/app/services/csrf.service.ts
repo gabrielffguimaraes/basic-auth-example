@@ -10,9 +10,6 @@ export class CsrfService {
   constructor(private http: HttpClient) { }
 
   public getCsrf() : Observable<any> {
-    let jwtToken = localStorage.getItem('authorization');
-    let headers = new HttpHeaders();
-    headers = headers.append('Authorization' , 'Bearer ' + jwtToken);
-    return this.http.get("http://localhost:8080/csrf",{withCredentials:true, headers});
+    return this.http.get("http://localhost:8080/auth/csrf",{withCredentials:true , responseType: 'text'});
   }
 }
